@@ -25,7 +25,6 @@ def mkp_mst_ratio(D, W):
         approx = DeliveryPath(heap)
         if approx > best_approx:
             best_approx = approx
-        print(len(heap))
 
     return best_approx
 
