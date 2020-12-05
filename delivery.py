@@ -79,8 +79,12 @@ class DeliveryPath:
     """
     def __init__(self, deliveries=(), make_mst=True):
         self.path = tuple(deliveries)
-        if len(deliveries) > 2 and make_mst:
+        if len(self.path) > 2 and make_mst:
             self.create_mst_path()
+
+    def __lt__(self, other):
+        """Comparisons are based on profitability."""
+        return (self.profit, -self.weight) < (other.profit, -other.weight)
 
     @property
     @lru_cache(maxsize=1)
@@ -152,6 +156,16 @@ class DeliveryPath:
             plt.annotate("", xy=(*a2,), xytext=(*a1,), arrowprops=dict(arrowstyle="->"))
         plt.show()
 
+    # def stats(self, all_deliveries, weight_limit):
+    #     avg_ratio = sum(d.item.ratio for d in all_deliveries) / len(all_deliveries)
+    #     avg_limited_value = avg_ratio * weight_limit
+    #
+    #     avg_random_distance = sum(
+    #         d1.address.distance_to(d2.address) for d1 in all_deliveries for d2 in all_deliveries
+    #     ) / (len(all_deliveries) - 1)
+    #
+    #     value_from_average_selection = (avg_limited_value * 0.01) - (avg_random_distance * 2)
+
     def __iter__(self):
         return iter(self.path)
 
@@ -160,6 +174,3 @@ class DeliveryPath:
 
     def __len__(self):
         return len(self.path)
-
-    def __lt__(self, other):
-        return (self.profit, -self.weight) < (other.profit, -other.weight)

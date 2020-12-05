@@ -2,10 +2,7 @@ from itertools import combinations
 from delivery import DeliveryPath, Delivery
 
 
-def main(deliveries):
-    W = 250
-    D = deliveries
-
+def mkp_mst(D, W):
     best_approx = DeliveryPath()
 
     for count in range(1, len(D)):
@@ -23,10 +20,13 @@ def main(deliveries):
         if not continue_:
             break
 
-    print(f"best profit: ${best_approx.profit:.2f}")
-    print(f"capacity used: {best_approx.weight / W :.1%}")
-    best_approx.plot(all_deliveries=D)
+    return best_approx
 
 
 if __name__ == '__main__':
-    main(Delivery.generate(20))
+    deliveries = Delivery.generate(20)
+    weight_limit = 250
+    path = mkp_mst(D=deliveries, W=weight_limit)
+    path.plot(all_deliveries=deliveries)
+    print(f"best profit: ${path.profit:.2f}")
+    print(f"capacity used: {path.weight / weight_limit:.1%}")

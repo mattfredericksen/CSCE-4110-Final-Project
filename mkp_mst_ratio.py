@@ -2,9 +2,7 @@ from heapq import heappush, heappop
 from delivery import DeliveryPath, Delivery
 
 
-def main(deliveries):
-    W = 2000
-    D = deliveries
+def mkp_mst_ratio(D, W):
     D.sort(reverse=True)
 
     w = 0
@@ -27,11 +25,15 @@ def main(deliveries):
         approx = DeliveryPath(heap)
         if approx > best_approx:
             best_approx = approx
+        print(len(heap))
 
-    print(f"best profit: ${best_approx.profit:.2f}")
-    print(f"capacity used: {best_approx.weight / W :.1%}")
-    best_approx.plot(all_deliveries=D)
+    return best_approx
 
 
 if __name__ == '__main__':
-    main(Delivery.generate(200))
+    deliveries = Delivery.generate(200)
+    weight_limit = 2000
+    path = mkp_mst_ratio(D=deliveries, W=weight_limit)
+    path.plot(all_deliveries=deliveries)
+    print(f"best profit: ${path.profit:.2f}")
+    print(f"capacity used: {path.weight / weight_limit:.1%}")

@@ -1,17 +1,13 @@
-from heapq import heappush, heappop
+from heapq import heapify, heappush, heappop
 from delivery import Delivery, DeliveryPath
 
 
-def main(deliveries):
-    # maximum weight capacity
-    W = 2000
-    D = deliveries
-
+def mkp_mst_ratio_dist(D, W):
     # heuristic: sort deliveries by their item's value-to-weight ratio
     D.sort(reverse=True)
 
     w = 0
-    heap = []
+    delivery_heap = []
     total_distance = {}
     best_approx = DeliveryPath()
 
@@ -20,7 +16,7 @@ def main(deliveries):
     # Its effectiveness likely depends on how dense the
     # delivery graph is.
     for d in D:
-        heappush(heap, d)
+        heappush(delivery_heap, d)
 
         # Heuristic: we keep track of the sum of distances
         # from each node to every other node. Then, we will
@@ -37,35 +33,43 @@ def main(deliveries):
         # delivery with the least value/weight ratio
         new_w = w + d.item.weight
         while new_w > W:
-            d = heappop(heap)
+            d = heappop(delivery_heap)
             for delivery in total_distance:
-                total_distance[delivery] -= d.item.weight
+                total_distance[delivery] -= delivery.address.distance_to(d.address)
             del total_distance[d]
             new_w -= d.item.weight
         w = new_w
 
-        furthest = sorted(total_distance, key=lambda k: total_distance[k])
-        approx = DeliveryPath(furthest)
+        furthest = [(-v, k) for k, v in total_distance.items()]
+        heapify(furthest)
+        approx = DeliveryPath(delivery_heap)
 
         # Check if dropping the "furthest" delivery improves profits.
         # After testing the algorithm with and without this heuristic,
-        # the results are often the same, but this one sometimes
-        # performs better
-        while furthest:
-            furthest.pop()
-            shorter_approx = DeliveryPath(furthest)
+        # the results are often significantly worse using with this process.
+        while len(furthest) > 10:
+            _, removed_delivery = heappop(furthest)
+            shorter_approx = DeliveryPath(delivery for _, delivery in furthest)
             if shorter_approx > approx:
                 approx = shorter_approx
+                for d in total_distance:
+                    total_distance[d] -= d.address.distance_to(removed_delivery.address)
+                del total_distance[d]
+                delivery_heap = shorter_approx.path
             else:
                 break
+        heapify(delivery_heap)
 
         if approx > best_approx:
             best_approx = approx
 
-    print(f"best profit: ${best_approx.profit:.2f}")
-    print(f"capacity used: {best_approx.weight / W :.1%}")
-    best_approx.plot(all_deliveries=D)
+    return best_approx
 
 
 if __name__ == '__main__':
-    main(Delivery.generate(200))
+    deliveries = Delivery.generate(200)
+    weight_limit = 2000
+    path = mkp_mst_ratio_dist(D=deliveries, W=weight_limit)
+    path.plot(all_deliveries=deliveries)
+    print(f"best profit: ${path.profit:.2f}")
+    print(f"capacity used: {path.weight / weight_limit:.1%}")

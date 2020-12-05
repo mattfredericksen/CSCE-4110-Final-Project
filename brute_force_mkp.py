@@ -2,10 +2,7 @@ from itertools import combinations, permutations
 from delivery import DeliveryPath, Delivery
 
 
-def main(deliveries):
-    W = 250
-    D = deliveries
-
+def brute_force_mkp(D, W):
     best_path = DeliveryPath()
 
     for count in range(1, len(D)):
@@ -23,13 +20,13 @@ def main(deliveries):
             if shortest_path > best_path:
                 best_path = shortest_path
 
-    print(f"best profit: ${best_path.profit:.2f}")
-    print(f"capacity used: {best_path.weight / W :.1%}")
-    print("best path:")
-    for d in best_path:
-        print(f'\t{d}')
-    best_path.plot(all_deliveries=D)
+    return best_path
 
 
 if __name__ == '__main__':
-    main(Delivery.generate(10))
+    deliveries = Delivery.generate(200)
+    weight_limit = 250
+    path = brute_force_mkp(D=deliveries, W=weight_limit)
+    path.plot(all_deliveries=deliveries)
+    print(f"best profit: ${path.profit:.2f}")
+    print(f"capacity used: {path.weight / weight_limit:.1%}")
