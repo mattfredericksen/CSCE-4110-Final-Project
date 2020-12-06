@@ -4,7 +4,7 @@ from mkp_mst_ratio import mkp_mst_ratio
 from mkp_mst_ratio_dist import mkp_mst_ratio_dist
 from delivery import Delivery
 
-from time import perf_counter_ns
+from time import perf_counter
 from pprint import pprint
 
 algorithms = [
@@ -13,8 +13,6 @@ algorithms = [
     mkp_mst_ratio,
     mkp_mst_ratio_dist
 ]
-
-backspace = '\b' * 20
 
 
 def results_init():
@@ -30,12 +28,11 @@ def compare_mkp_solutions():
         deliveries = Delivery.generate(8)
         weight_limit = 250
         for algo in algorithms:
-            t0 = perf_counter_ns()
+            t0 = perf_counter()
             path = algo(D=deliveries, W=weight_limit)
-            results[algo.__name__]['time'] += perf_counter_ns() - t0
+            results[algo.__name__]['time'] += perf_counter() - t0
             results[algo.__name__]['profit'] += path.profit
-        print(f"{backspace}Round {i+1}/10", end='')
-    print()
+        print(f"Round {i+1}/10")
     pprint(results, width=50)
 
     print('Compared to brute force:')
@@ -54,12 +51,11 @@ def compare_mkp_solutions():
         deliveries = Delivery.generate(16)
         weight_limit = 250
         for algo in algorithms:
-            t0 = perf_counter_ns()
+            t0 = perf_counter()
             path = algo(D=deliveries, W=weight_limit)
-            results[algo.__name__]['time'] += perf_counter_ns() - t0
+            results[algo.__name__]['time'] += perf_counter() - t0
             results[algo.__name__]['profit'] += path.profit
-        print(f"{backspace}Round {i+1}/10", end='')
-    print()
+        print(f"Round {i+1}/10")
     pprint(results, width=50)
 
     print('Compared to combinatorial mst:')
@@ -78,12 +74,11 @@ def compare_mkp_solutions():
         deliveries = Delivery.generate(250)
         weight_limit = 2000
         for algo in algorithms:
-            t0 = perf_counter_ns()
+            t0 = perf_counter()
             path = algo(D=deliveries, W=weight_limit)
-            results[algo.__name__]['time'] += perf_counter_ns() - t0
+            results[algo.__name__]['time'] += perf_counter() - t0
             results[algo.__name__]['profit'] += path.profit
-        print(f"{backspace}Round {i+1}/10", end='')
-    print()
+        print(f"Round {i+1}/10")
     pprint(results, width=50)
 
     print('Comparing:')

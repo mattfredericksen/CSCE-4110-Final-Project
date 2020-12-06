@@ -5,7 +5,13 @@ from heapq import heapify, heappush, heappop
 from random import randint, uniform
 from math import log10
 
-import matplotlib.pyplot as plt
+try:
+    import matplotlib.pyplot as plt
+except Exception as e:
+    print(e)
+    plt = None
+    print("WARNING: matplotlib is not installed.")
+    print("Graphs will not be displayed.")
 
 
 class Item:
@@ -139,6 +145,9 @@ class DeliveryPath:
 
     def plot(self, all_deliveries=(), label=False):
         """Helper function to visualize paths."""
+        if not plt:
+            return
+
         all_deliveries = all_deliveries or self.path
 
         min_x, min_y, max_x, max_y = (*[float('inf')] * 2, *[float('-inf')] * 2)
